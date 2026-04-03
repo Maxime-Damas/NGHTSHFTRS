@@ -14,6 +14,9 @@ import {
   Youtube,
   Twitch
 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import API_URL from './config';
 
 const getImgUrl = (path: string) => {
@@ -37,6 +40,7 @@ const ProfileGate = ({ onEnter }: { onEnter: () => void }) => (
   <motion.div 
     initial={{ opacity: 1 }}
     exit={{ opacity: 0 }}
+    transition={{ duration: 1.5, ease: "easeInOut" }}
     className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center cursor-pointer font-mono"
     onClick={onEnter}
   >
@@ -210,9 +214,11 @@ const ProfilePage = () => {
             </h1>
             
             {profile.bio && (
-              <p className="text-white/60 text-sm max-w-sm leading-relaxed mb-6">
-                {profile.bio}
-              </p>
+              <div className="text-white/60 text-sm max-w-sm leading-relaxed mb-6 prose prose-invert prose-xs bio-content">
+                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                  {profile.bio}
+                </ReactMarkdown>
+              </div>
             )}
 
             {/* Social Links */}

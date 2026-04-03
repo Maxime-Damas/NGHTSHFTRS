@@ -14,6 +14,9 @@ import {
   Check,
   AlertCircle
 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import ProfilePage from './ProfilePage';
 import API_URL from './config';
 
@@ -56,7 +59,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
 
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
-  const [activeTab, setActiveTab] = useState<'general' | 'appearance' | 'links'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'appearance'>('general');
   const [showGifSearch, setShowGifSearch] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -64,26 +67,6 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
     const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : 
                 type === 'range' ? parseInt(value) : value;
     setFormData(prev => ({ ...prev, [name]: val }));
-  };
-
-  const handleSocialChange = (index: number, field: string, value: string) => {
-    const newLinks = [...formData.social_links];
-    newLinks[index] = { ...newLinks[index], [field]: value };
-    setFormData(prev => ({ ...prev, social_links: newLinks }));
-  };
-
-  const addSocialLink = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      social_links: [...prev.social_links, { platform: 'Instagram', url: '' }] 
-    }));
-  };
-
-  const removeSocialLink = (index: number) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      social_links: prev.social_links.filter((_: any, i: number) => i !== index) 
-    }));
   };
 
   const handleSave = async () => {
@@ -132,13 +115,13 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
         </div>
 
         <div className="flex border-b border-white/10 bg-black/20">
-          {(['general', 'appearance', 'links'] as const).map(tab => (
+          {(['general', 'appearance'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-4 text-[8px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-[var(--accent-pink)] text-white' : 'text-white/20 hover:text-white/40'}`}
             >
-              {tab === 'general' ? 'Général' : tab === 'appearance' ? 'Apparence' : 'Liens'}
+              {tab === 'general' ? 'Général' : 'Apparence'}
             </button>
           ))}
         </div>
@@ -147,8 +130,24 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
           {activeTab === 'general' && (
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
-                  <Share2 size={12} /> Bio de Profil
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2 group relative">
+                  <Share2 size={12} /> Bio de Profil 
+                  <AlertCircle size={14} className="cursor-help text-[var(--accent-cyan)] opacity-50 hover:opacity-100 transition-opacity" />
+                  
+                  {/* Tooltip Popup - Positioned directly below */}
+                  <div className="absolute top-full left-0 mt-2 w-72 p-4 bg-[#0a0a0a] border border-white/10 backdrop-blur-xl z-[100] pointer-events-none opacity-0 group-hover:opacity-100 transition-all shadow-2xl">
+                    <div className="absolute -top-1 left-10 w-2 h-2 bg-[#0a0a0a] border-t border-l border-white/10 rotate-45" />
+                    <p className="text-[var(--accent-cyan)] mb-2 border-b border-white/10 pb-1 italic">GUIDE_MARKDOWN :</p>
+                    <div className="space-y-2 text-[9px] text-white/60 normal-case tracking-normal font-sans">
+                      <p><span className="text-white font-mono">**gras**</span> : **Texte**</p>
+                      <p><span className="text-white font-mono">*italique*</span> : *Texte*</p>
+                      <p><span className="text-white font-mono"># Titre</span> : Titre Section</p>
+                      <p><span className="text-white font-mono">- Liste</span> : Puces</p>
+                      <p><span className="text-white font-mono">&gt; Citation</span> : Bloc stylisé</p>
+                      <p><span className="text-white font-mono">[Texte](Lien)</span> : Lien URL</p>
+                      <p className="pt-1 border-t border-white/5 text-[8px] italic text-[var(--accent-pink)]">Les sauts de ligne sont automatiques.</p>
+                    </div>
+                  </div>
                 </label>
                 <textarea
                   name="bio"
@@ -280,41 +279,6 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                   </div>
                 </div>
               </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'links' && (
-            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-              {formData.social_links.map((link: any, idx: number) => (
-                <div key={idx} className="p-4 bg-white/5 border border-white/10 space-y-3 relative group">
-                  <button 
-                    onClick={() => removeSocialLink(idx)}
-                    className="absolute top-2 right-2 text-white/20 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                  <select
-                    value={link.platform}
-                    onChange={(e) => handleSocialChange(idx, 'platform', e.target.value)}
-                    className="w-full bg-black border border-white/10 p-2 text-[10px] outline-none"
-                  >
-                    {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                  <input
-                    type="text"
-                    value={link.url}
-                    onChange={(e) => handleSocialChange(idx, 'url', e.target.value)}
-                    placeholder="Lien (ex: https://instagram.com/user)"
-                    className="w-full bg-black border border-white/10 p-2 text-[10px] outline-none"
-                  />
-                </div>
-              ))}
-              <button 
-                onClick={addSocialLink}
-                className="w-full py-4 border border-dashed border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase"
-              >
-                <Plus size={14} /> Ajouter un lien
-              </button>
             </motion.div>
           )}
         </div>
@@ -461,7 +425,11 @@ const PreviewProfile = ({ profile }: { profile: any }) => {
               style={{ borderColor: profile.theme_color || '#ff2d55' }}
             />
             <h1 className="text-3xl font-black italic uppercase tracking-tighter mb-2">{profile.nickname}</h1>
-            <p className="text-white/60 text-xs max-w-sm">{profile.bio || 'Aucune bio définie'}</p>
+            <div className="text-white/60 text-xs max-w-sm prose prose-invert prose-xs bio-content">
+              <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                {profile.bio || 'Aucune bio définie'}
+              </ReactMarkdown>
+            </div>
           </div>
 
           <div className="flex justify-center gap-3 flex-wrap mb-8">

@@ -219,6 +219,74 @@ button {
 }
 
 
+/* Bio Content Markdown Styling */
+.bio-content {
+  text-align: inherit;
+  word-wrap: break-word;
+}
+
+.bio-content p {
+  margin-bottom: 0.75rem;
+}
+
+.bio-content p:last-child {
+  margin-bottom: 0;
+}
+
+.bio-content h1, .bio-content h2, .bio-content h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-family: inherit;
+  color: white;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.bio-content h1 { font-size: 1.25rem; }
+.bio-content h2 { font-size: 1.1rem; }
+.bio-content h3 { font-size: 1rem; }
+
+.bio-content ul, .bio-content ol {
+  margin-left: 1.25rem;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.bio-content li {
+  margin-bottom: 0.25rem;
+}
+
+.bio-content strong {
+  color: white;
+  font-weight: 900;
+}
+
+.bio-content em {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.bio-content a {
+  color: var(--accent-pink);
+  text-decoration: underline;
+}
+
+.bio-content blockquote {
+  border-left: 2px solid var(--accent-pink);
+  padding-left: 1rem;
+  opacity: 0.7;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.bio-content code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+}
+
 /* CRT Scanline Overlay */
 .crt::after {
   content: " ";
