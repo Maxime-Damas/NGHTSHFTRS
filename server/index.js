@@ -14,12 +14,26 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'nghtshftrs_super_secret_key';
 
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  optionsSuccessStatus: 200
-};
+const allowedOrigins = [
+  'http://localhost:5173',          // Pour tes tests sur ton PC
+  'https://nghtshftrs.vercel.app'   // Ton URL officielle Vercel
+];
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: function (origin, callback) {
+    // Autorise les requêtes sans origine (comme Postman ou les outils serveurs)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS non autorisé pour cette origine'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
