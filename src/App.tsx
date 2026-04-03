@@ -108,6 +108,21 @@ const Navbar = ({ member, onLogout, onEditProfile }: { member: any, onLogout: ()
             <p className="text-white text-xs font-bold uppercase group-hover:text-[var(--accent-pink)]">{member.nickname}</p>
             <p className="text-[var(--accent-pink)] text-[8px] font-bold uppercase tracking-widest flex items-center justify-end gap-1">ÉDITER <Settings size={8} /></p>
           </div>
+          {member.profile_photo ? (
+            <img 
+              src={getImgUrl(member.profile_photo)} 
+              alt={member.nickname} 
+              className="w-10 h-10 rounded object-cover border border-white/10 cursor-pointer hover:border-[var(--accent-pink)] transition-all"
+              onClick={onEditProfile}
+            />
+          ) : (
+            <div 
+              onClick={onEditProfile}
+              className="w-10 h-10 rounded bg-white/5 border border-white/10 flex items-center justify-center cursor-pointer hover:border-[var(--accent-pink)] transition-all text-white/20 hover:text-[var(--accent-pink)]"
+            >
+              <UserCircle size={20} />
+            </div>
+          )}
           <button onClick={onLogout} className="p-2 text-white/10 hover:text-red-500"><LogOut size={16}/></button>
         </div>
       </div>
