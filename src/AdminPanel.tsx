@@ -10,23 +10,35 @@ const EVENT_TYPES = ['Street Race', 'Car Meet', 'Toughe', 'Drift Trial', 'Other'
 const ImageUpload = ({ label, value, onChange, fieldName }: { label: string, value: any, onChange: (file: File | string) => void, fieldName: string }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (typeof value === 'string' && value) {
       setPreview(value.startsWith('http') || value.startsWith('/') ? value : null);
+      if (value.startsWith('http')) setUrlInput(value);
     } else if (value instanceof File) {
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result as string);
       reader.readAsDataURL(value);
     } else {
       setPreview(null);
+      setUrlInput('');
     }
   }, [value]);
 
   const handleFile = (file: File) => {
     if (file && file.type.startsWith('image/')) {
       onChange(file);
+      setUrlInput(''); // Clear URL if file is uploaded
+    }
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setUrlInput(url);
+    if (url.trim()) {
+      onChange(url); // Set value as string URL
     }
   };
 
@@ -49,41 +61,51 @@ const ImageUpload = ({ label, value, onChange, fieldName }: { label: string, val
   };
 
   return (
-    <div 
-      className={`relative group border-2 border-dashed transition-all duration-300 p-4 bg-black/40 flex flex-col items-center justify-center min-h-[120px] cursor-pointer ${isDragging ? 'border-[var(--accent-pink)] bg-[var(--accent-pink)]/5' : 'border-white/10 hover:border-white/30'}`}
-      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-      onDragLeave={() => setIsDragging(false)}
-      onDrop={onDrop}
-      onPaste={onPaste}
-      onClick={() => fileInputRef.current?.click()}
-      tabIndex={0}
-    >
+    <div className="flex flex-col gap-2">
+      <div 
+        className={`relative group border-2 border-dashed transition-all duration-300 p-4 bg-black/40 flex flex-col items-center justify-center min-h-[120px] cursor-pointer ${isDragging ? 'border-[var(--accent-pink)] bg-[var(--accent-pink)]/5' : 'border-white/10 hover:border-white/30'}`}
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={onDrop}
+        onPaste={onPaste}
+        onClick={() => fileInputRef.current?.click()}
+        tabIndex={0}
+      >
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          className="hidden" 
+          accept="image/*" 
+          onChange={(e) => e.target.files && handleFile(e.target.files[0])} 
+        />
+        
+        {preview ? (
+          <div className="relative w-full h-full flex flex-col items-center">
+            <img src={preview.startsWith('/') && !preview.startsWith('http') ? `${BASE_URL}${preview}` : preview} alt="Preview" className="max-h-24 object-contain mb-2" />
+            <span className="text-[8px] text-white/40 uppercase truncate max-w-full">{value instanceof File ? value.name : 'Image Distante'}</span>
+            <button 
+              className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => { e.stopPropagation(); onChange(''); setPreview(null); setUrlInput(''); }}
+            >
+              <X size={12} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-white/20 group-hover:text-white/40 transition-colors text-center">
+            <Upload size={24} />
+            <span className="text-[9px] font-bold uppercase tracking-tighter">{label}</span>
+            <span className="text-[7px] uppercase opacity-50">Drop, Paste or Click</span>
+          </div>
+        )}
+      </div>
       <input 
-        type="file" 
-        ref={fileInputRef} 
-        className="hidden" 
-        accept="image/*" 
-        onChange={(e) => e.target.files && handleFile(e.target.files[0])} 
+        type="text" 
+        placeholder="Ou coller une URL directe (https://...)" 
+        className="w-full bg-black/60 border border-white/5 p-2 text-[8px] uppercase font-bold outline-none focus:border-[var(--accent-pink)] transition-colors"
+        value={urlInput}
+        onChange={handleUrlChange}
+        onClick={(e) => e.stopPropagation()}
       />
-      
-      {preview ? (
-        <div className="relative w-full h-full flex flex-col items-center">
-          <img src={preview.startsWith('/') && !preview.startsWith('http') ? `${BASE_URL}${preview}` : preview} alt="Preview" className="max-h-24 object-contain mb-2" />
-          <span className="text-[8px] text-white/40 uppercase truncate max-w-full">{value instanceof File ? value.name : 'Existing Image'}</span>
-          <button 
-            className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => { e.stopPropagation(); onChange(''); setPreview(null); }}
-          >
-            <X size={12} />
-          </button>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-2 text-white/20 group-hover:text-white/40 transition-colors">
-          <Upload size={24} />
-          <span className="text-[9px] font-bold uppercase tracking-tighter">{label}</span>
-          <span className="text-[7px] uppercase opacity-50">Drop, Paste or Click</span>
-        </div>
-      )}
     </div>
   );
 };
