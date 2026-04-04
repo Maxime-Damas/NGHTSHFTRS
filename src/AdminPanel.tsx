@@ -465,76 +465,83 @@ const AdminPanel = () => {
             {managementTab === 'grid' && (
               <div className="space-y-8">
                 <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-6">
-                  <h3 className="text-xl font-black italic tracking-tighter uppercase">Grille de Départ Officielle</h3>
+                  <h3 className="text-xl font-black italic tracking-tighter uppercase">Grilles de Départ par Pool</h3>
                   <div className="flex gap-2">
-                    <button 
-                      onClick={exportToPNG}
-                      className="bg-white/5 border border-white/10 text-white px-4 py-2 text-[10px] font-black uppercase hover:bg-white hover:text-black transition-all flex items-center gap-2"
-                    >
-                      <ImageIcon size={14} /> PNG
-                    </button>
-                    <button 
-                      onClick={exportToPDF}
-                      className="bg-[var(--accent-cyan)] text-black px-4 py-2 text-[10px] font-black uppercase hover:bg-white transition-all flex items-center gap-2"
-                    >
-                      <Download size={14} /> PDF
-                    </button>
+                    {pools.length > 0 && (
+                      <>
+                        <button 
+                          onClick={exportToPNG}
+                          className="bg-white/5 border border-white/10 text-white px-4 py-2 text-[10px] font-black uppercase hover:bg-white hover:text-black transition-all flex items-center gap-2"
+                        >
+                          <ImageIcon size={14} /> PNG
+                        </button>
+                        <button 
+                          onClick={exportToPDF}
+                          className="bg-[var(--accent-cyan)] text-black px-4 py-2 text-[10px] font-black uppercase hover:bg-white transition-all flex items-center gap-2"
+                        >
+                          <Download size={14} /> PDF
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 
-                <div ref={gridRef} className="p-8 bg-[#050505] border border-white/5">
-                  <div className="text-center mb-12 border-b border-white/10 pb-8">
-                    <h4 className="text-3xl font-black italic uppercase tracking-tighter font-heading text-[var(--accent-purple)]">{event.title}</h4>
-                    <p className="text-[10px] text-white/40 uppercase font-bold tracking-[0.5em] mt-2">Grille de Départ Officielle // {event.date}</p>
-                  </div>
+                {pools.length > 0 ? (
+                  <div ref={gridRef} className="space-y-16 p-8 bg-[#050505] border border-white/5">
+                    <div className="text-center mb-12 border-b border-white/10 pb-8">
+                      <h4 className="text-3xl font-black italic uppercase tracking-tighter font-heading text-[var(--accent-purple)]">{event.title}</h4>
+                      <p className="text-[10px] text-white/40 uppercase font-bold tracking-[0.5em] mt-2">Sessions de Course Officielles // {event.date}</p>
+                    </div>
 
-                  <div className="grid gap-4 max-w-2xl mx-auto relative">
-                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/5 -translate-x-1/2 hidden md:block" />
-                    
-                    {sortedParticipants.filter(p => !p.is_dnf && p.qualifying_time).map((p, idx) => (
-                      <div 
-                        key={p.id} 
-                        className={`flex items-center gap-6 p-4 bg-black border border-white/10 relative group ${idx % 2 === 0 ? 'md:mr-[50%]' : 'md:ml-[50%]'}`}
-                      >
-                        <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-[var(--accent-purple)] rotate-45 flex items-center justify-center">
-                          <span className="text-[8px] font-black -rotate-45 text-white">{idx + 1}</span>
+                    {pools.map((pool, pIdx) => (
+                      <div key={pIdx} className="space-y-8">
+                        <div className="flex items-center gap-4">
+                          <div className="h-px flex-1 bg-white/10" />
+                          <h5 className="text-lg font-black italic uppercase tracking-widest text-[var(--accent-cyan)]">POOL #{pIdx + 1}</h5>
+                          <div className="h-px flex-1 bg-white/10" />
                         </div>
-                        
-                        <div className="flex-1 flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <img src={p.profile_photo?.startsWith('/') ? `${BASE_URL}${p.profile_photo}` : p.profile_photo} className="w-10 h-10 rounded-sm border border-white/10" />
-                            <div>
-                              <p className="text-xs font-black uppercase italic tracking-tighter">{p.nickname}</p>
-                              <p className="text-[8px] text-white/40 uppercase font-bold">{p.car_model}</p>
+
+                        <div className="grid gap-4 max-w-2xl mx-auto relative">
+                          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/5 -translate-x-1/2 hidden md:block" />
+                          
+                          {pool.map((p, idx) => (
+                            <div 
+                              key={p.id} 
+                              className={`flex items-center gap-6 p-4 bg-black border border-white/10 relative group ${idx % 2 === 0 ? 'md:mr-[50%]' : 'md:ml-[50%]'}`}
+                            >
+                              <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-[var(--accent-purple)] rotate-45 flex items-center justify-center">
+                                <span className="text-[8px] font-black -rotate-45 text-white">{idx + 1}</span>
+                              </div>
+                              
+                              <div className="flex-1 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                  <img src={p.profile_photo?.startsWith('/') ? `${BASE_URL}${p.profile_photo}` : p.profile_photo} className="w-10 h-10 rounded-sm border border-white/10" />
+                                  <div>
+                                    <p className="text-xs font-black uppercase italic tracking-tighter">{p.nickname}</p>
+                                    <p className="text-[8px] text-white/40 uppercase font-bold">{p.car_model}</p>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-[10px] font-mono text-[var(--accent-cyan)]">{formatMs(p.qualifying_time)}</p>
+                                  <p className="text-[7px] text-white/20 uppercase font-black">QUALIFIED</p>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-[10px] font-mono text-[var(--accent-cyan)]">{formatMs(p.qualifying_time)}</p>
-                            <p className="text-[7px] text-white/20 uppercase font-black">QUALIFIED</p>
-                          </div>
+                          ))}
                         </div>
                       </div>
                     ))}
-                  </div>
 
-                  {sortedParticipants.filter(p => p.is_dnf || !p.qualifying_time).length > 0 && (
-                    <div className="mt-12 pt-8 border-t border-white/5">
-                      <h4 className="text-[10px] font-black uppercase text-white/20 tracking-widest mb-4">Non-Qualifiés / DNF</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        {sortedParticipants.filter(p => p.is_dnf || !p.qualifying_time).map(p => (
-                          <div key={p.id} className="p-3 bg-white/5 border border-white/5 flex justify-between items-center opacity-60">
-                            <span className="text-[10px] font-bold uppercase">{p.nickname}</span>
-                            <span className="text-[8px] font-black uppercase text-red-500/50">{p.is_dnf ? 'DNF' : 'NO TIME'}</span>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="mt-12 text-center opacity-10">
+                      <p className="text-[8px] font-black uppercase tracking-[1em]">NGHTSHFTRS // RACE CONTROL SYSTEM</p>
                     </div>
-                  )}
-                  
-                  <div className="mt-12 text-center opacity-10">
-                    <p className="text-[8px] font-black uppercase tracking-[1em]">NGHTSHFTRS // RACE CONTROL SYSTEM</p>
                   </div>
-                </div>
+                ) : (
+                  <div className="h-64 flex flex-col items-center justify-center border border-white/5 border-dashed text-white/10 uppercase font-black italic">
+                    <Users size={48} className="mb-4 opacity-20" />
+                    Veuillez d'abord générer les pools dans l'onglet "Pools"
+                  </div>
+                )}
               </div>
             )}
           </div>
