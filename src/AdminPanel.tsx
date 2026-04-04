@@ -63,7 +63,7 @@ const ImageUpload = ({ label, value, onChange, fieldName }: { label: string, val
   return (
     <div className="flex flex-col gap-2">
       <div 
-        className={`relative group border-2 border-dashed transition-all duration-300 p-4 bg-black/40 flex flex-col items-center justify-center min-h-[120px] cursor-pointer ${isDragging ? 'border-[var(--accent-pink)] bg-[var(--accent-pink)]/5' : 'border-white/10 hover:border-white/30'}`}
+        className={`relative group border-2 border-dashed transition-all duration-300 p-4 bg-black/40 flex flex-col items-center justify-center min-h-[120px] cursor-pointer ${isDragging ? 'border-[var(--accent-purple)] bg-[var(--accent-purple)]/5' : 'border-white/10 hover:border-white/30'}`}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={onDrop}
@@ -101,7 +101,7 @@ const ImageUpload = ({ label, value, onChange, fieldName }: { label: string, val
       <input 
         type="text" 
         placeholder="Ou coller une URL directe (https://...)" 
-        className="w-full bg-black/60 border border-white/5 p-2 text-[8px] uppercase font-bold outline-none focus:border-[var(--accent-pink)] transition-colors"
+        className="w-full bg-black/60 border border-white/5 p-2 text-[8px] uppercase font-bold outline-none focus:border-[var(--accent-purple)] transition-colors"
         value={urlInput}
         onChange={handleUrlChange}
         onClick={(e) => e.stopPropagation()}
@@ -281,8 +281,8 @@ const AdminPanel = () => {
       <div className="space-y-8">
         <div className="flex justify-between items-center border-b border-white/10 pb-6">
           <div>
-            <button onClick={onBack} className="text-[10px] text-[var(--accent-pink)] mb-2 hover:underline tracking-widest font-black uppercase flex items-center gap-2">&lt; Retour au centre de contrôle</button>
-            <h2 className="text-4xl font-black italic tracking-tighter uppercase">{event.title} <span className="text-white/20">// GESTION_SESSION</span></h2>
+            <button onClick={onBack} className="text-[10px] text-[var(--accent-purple)] mb-2 hover:underline tracking-widest font-black uppercase flex items-center gap-2">&lt; Retour au centre de contrôle</button>
+            <h2 className="text-4xl font-black italic tracking-tighter uppercase font-heading">{event.title} <span className="text-white/20">// GESTION_SESSION</span></h2>
           </div>
           <div className="flex gap-4">
             <div className="bg-white/5 border border-white/10 p-4 text-center min-w-[120px]"><p className="text-[8px] text-white/40 mb-1 uppercase">Frais</p><p className="text-xl font-bold text-[var(--accent-yellow)]">$ {event.price}</p></div>
@@ -292,7 +292,7 @@ const AdminPanel = () => {
 
         <div className="flex gap-8">
           <div className="w-48 space-y-2">
-            <button className="w-full text-left p-4 bg-[var(--accent-pink)] text-white text-[10px] font-black tracking-widest uppercase">Qualifications</button>
+            <button className="w-full text-left p-4 bg-[var(--accent-purple)] text-white text-[10px] font-black tracking-widest uppercase">Qualifications</button>
             <button className="w-full text-left p-4 bg-white/5 text-white/20 text-[10px] font-black tracking-widest uppercase cursor-not-allowed">Course Finale</button>
           </div>
 
@@ -300,7 +300,7 @@ const AdminPanel = () => {
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl font-black italic tracking-tighter">SAISIE DES DONNÉES : QUALIFICATIONS</h3>
               <div className="flex gap-4">
-                <input type="text" placeholder="CHERCHER UN COUREUR..." className="bg-black border border-white/10 p-2 text-[10px] outline-none focus:border-[var(--accent-pink)] w-64 uppercase font-bold" value={search} onChange={e => setSearch(e.target.value)} />
+                <input type="text" placeholder="CHERCHER UN COUREUR..." className="bg-black border border-white/10 p-2 text-[10px] outline-none focus:border-[var(--accent-purple)] w-64 uppercase font-bold" value={search} onChange={e => setSearch(e.target.value)} />
                 <button onClick={() => setSortAsc(!sortAsc)} className="bg-white/5 border border-white/10 px-4 text-[10px] font-black hover:bg-white hover:text-black transition-all">TRI : {sortAsc ? 'PLUS RAPIDE' : 'PLUS LENT'}</button>
               </div>
             </div>
@@ -318,7 +318,7 @@ const AdminPanel = () => {
                     <div className="col-span-3 flex items-center gap-3"><img src={p.profile_photo?.startsWith('/') ? `${BASE_URL}${p.profile_photo}` : p.profile_photo} className="w-8 h-8 rounded-full border border-white/10" /><span className="font-bold text-white text-xs uppercase">{p.nickname}</span></div>
                     <div className="col-span-3 text-white/40 text-[10px] font-bold uppercase">{p.car_model}</div>
                     <div className="col-span-3"><input type="text" defaultValue={formatMs(p.qualifying_time)} placeholder="0:00.000" className="bg-black border border-white/10 p-2 w-full text-center font-mono text-xs focus:border-[var(--accent-cyan)] outline-none text-[var(--accent-cyan)]" onBlur={(e) => updateQualif(p.id, e.target.value, p.is_dnf)} /></div>
-                    <div className="col-span-2 flex justify-center"><input type="checkbox" checked={p.is_dnf === 1} className="w-4 h-4 accent-[var(--accent-pink)] cursor-pointer" onChange={(e) => updateQualif(p.id, formatMs(p.qualifying_time), e.target.checked)} /></div>
+                    <div className="col-span-2 flex justify-center"><input type="checkbox" checked={p.is_dnf === 1} className="w-4 h-4 accent-[var(--accent-purple)] cursor-pointer" onChange={(e) => updateQualif(p.id, formatMs(p.qualifying_time), e.target.checked)} /></div>
                   </div>
                 );
               })}
@@ -342,12 +342,12 @@ const AdminPanel = () => {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-6 text-white uppercase font-bold tracking-[0.2em]">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-md p-8 bg-white/5 border border-white/10 text-center">
-          <ShieldAlert className="mx-auto text-[var(--accent-pink)] mb-6" size={64} />
-          <h1 className="text-xl mb-8">ACCÈS SYSTÈME</h1>
+          <ShieldAlert className="mx-auto text-[var(--accent-purple)] mb-6" size={64} />
+          <h1 className="text-xl mb-8 font-speed">ACCÈS SYSTÈME</h1>
           <form onSubmit={handleLogin} className="space-y-4 text-left">
             <input type="text" placeholder="ID ADMIN" className="w-full p-4 bg-black border border-white/10 text-white outline-none" onChange={e => setLoginData({...loginData, username: e.target.value})} />
             <input type="password" placeholder="MOT DE PASSE" className="w-full p-4 bg-black border border-white/10 text-white outline-none" onChange={e => setLoginData({...loginData, password: e.target.value})} />
-            <button className="w-full py-4 bg-[var(--accent-pink)] text-white hover:bg-[var(--accent-pink)]/80 transition-all">EXÉCUTER</button>
+            <button className="w-full py-4 bg-[var(--accent-purple)] text-white hover:bg-[var(--accent-purple)]/80 transition-all">EXÉCUTER</button>
           </form>
           {error && <p className="mt-4 text-red-500 text-[10px]">{error}</p>}
         </motion.div>
@@ -358,16 +358,16 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-[#050505] flex text-white uppercase font-bold text-xs tracking-widest relative z-10">
       <div className="w-64 border-r border-white/10 p-6 space-y-4 bg-[#050505] relative z-20">
-        <h2 className="text-xl mb-12 tracking-tighter italic">NGHTSHFTRS</h2>
-        <button onClick={() => setActiveTab('events')} className={`w-full flex items-center gap-3 p-3 rounded ${activeTab === 'events' ? 'bg-[var(--accent-pink)]' : ''}`}><Calendar size={16}/> ÉVÉNEMENTS</button>
-        <button onClick={() => setActiveTab('gallery')} className={`w-full flex items-center gap-3 p-3 rounded ${activeTab === 'gallery' ? 'bg-[var(--accent-pink)]' : ''}`}><ImageIcon size={16}/> GALERIE</button>
-        <button onClick={() => setActiveTab('members')} className={`w-full flex items-center gap-3 p-3 rounded ${activeTab === 'members' ? 'bg-[var(--accent-pink)]' : ''}`}><Users size={16}/> MEMBRES</button>
+        <h2 className="text-xl mb-12 tracking-tighter italic font-speed">NGHTSHFTRS</h2>
+        <button onClick={() => setActiveTab('events')} className={`w-full flex items-center gap-3 p-3 rounded ${activeTab === 'events' ? 'bg-[var(--accent-purple)]' : ''}`}><Calendar size={16}/> ÉVÉNEMENTS</button>
+        <button onClick={() => setActiveTab('gallery')} className={`w-full flex items-center gap-3 p-3 rounded ${activeTab === 'gallery' ? 'bg-[var(--accent-purple)]' : ''}`}><ImageIcon size={16}/> GALERIE</button>
+        <button onClick={() => setActiveTab('members')} className={`w-full flex items-center gap-3 p-3 rounded ${activeTab === 'members' ? 'bg-[var(--accent-purple)]' : ''}`}><Users size={16}/> MEMBRES</button>
         <button onClick={() => {setToken(null); localStorage.removeItem('adminToken');}} className="absolute bottom-6 flex items-center gap-3 text-white/40 hover:text-white"><LogOut size={16}/> DÉCONNEXION</button>
       </div>
 
       <div className="flex-1 p-12 overflow-y-auto font-mono relative z-20">
         <div className="flex justify-between items-center mb-12">
-          <h2 className="text-4xl font-bold uppercase">{activeTab === 'events' ? 'Événements' : activeTab === 'gallery' ? 'Galerie' : 'Membres'}</h2>
+          <h2 className="text-4xl font-bold uppercase font-heading">{activeTab === 'events' ? 'Événements' : activeTab === 'gallery' ? 'Galerie' : 'Membres'}</h2>
           <div className="text-[10px] text-white/40 flex gap-4">
             <span>TOKEN : {token ? 'VALIDE' : 'ABSENT'}</span>
             {activeTab === 'members' && <span>TOTAL : {members.length}</span>}
@@ -384,7 +384,7 @@ const AdminPanel = () => {
           <div className="space-y-8">
             <form onSubmit={handleSubmitMember} className="grid grid-cols-3 gap-6 bg-white/5 p-6 border border-white/10">
               <div className="col-span-1 space-y-4">
-                <input type="text" placeholder="PSEUDO" className="w-full bg-black p-3 border border-white/10 outline-none focus:border-[var(--accent-pink)] transition-colors" value={newMember.nickname} onChange={e => setNewMember({...newMember, nickname: e.target.value})} />
+                <input type="text" placeholder="PSEUDO" className="w-full bg-black p-3 border border-white/10 outline-none focus:border-[var(--accent-purple)] transition-colors" value={newMember.nickname} onChange={e => setNewMember({...newMember, nickname: e.target.value})} />
                 <input type="text" placeholder="CODE D'ACCÈS" className="w-full bg-black p-3 border border-white/10 text-[var(--accent-cyan)] outline-none focus:border-[var(--accent-cyan)] transition-colors" value={newMember.access_code} onChange={e => setNewMember({...newMember, access_code: e.target.value})} />
                 <input type="text" placeholder="MODÈLE VÉHICULE" className="w-full bg-black p-3 border border-white/10 outline-none focus:border-white/30 transition-colors" value={newMember.car_model} onChange={e => setNewMember({...newMember, car_model: e.target.value})} />
               </div>
@@ -403,7 +403,7 @@ const AdminPanel = () => {
                   <input type="number" className="bg-black p-3 border border-white/10" value={newMember.wins_2nd} onChange={e => setNewMember({...newMember, wins_2nd: parseInt(e.target.value)})} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-[var(--accent-pink)] text-[8px]">3ÈMES PLACES</label>
+                  <label className="text-[var(--accent-purple)] text-[8px]">3ÈMES PLACES</label>
                   <input type="number" className="bg-black p-3 border border-white/10" value={newMember.wins_3rd} onChange={e => setNewMember({...newMember, wins_3rd: parseInt(e.target.value)})} />
                 </div>
               </div>
@@ -424,12 +424,12 @@ const AdminPanel = () => {
                     <div className="flex gap-8 ml-8 border-l border-white/10 pl-8">
                       <div className="text-center"><p className="text-[8px] text-[var(--accent-yellow)]">1ER</p><p className="text-lg">{m.wins_1st}</p></div>
                       <div className="text-center"><p className="text-[8px] text-white/40">2E</p><p className="text-lg">{m.wins_2nd}</p></div>
-                      <div className="text-center"><p className="text-[8px] text-[var(--accent-pink)]">3E</p><p className="text-lg">{m.wins_3rd}</p></div>
+                      <div className="text-center"><p className="text-[8px] text-[var(--accent-purple)]">3E</p><p className="text-lg">{m.wins_3rd}</p></div>
                     </div>
                   </div>
                   <div className="flex gap-4">
                     <button onClick={() => startEditMember(m)} className="text-[var(--accent-cyan)] hover:scale-110 transition-transform"><Edit2 size={18}/></button>
-                    <button onClick={() => deleteItem('members', m.id)} className="text-[var(--accent-pink)] hover:scale-110 transition-transform"><Trash2 size={18}/></button>
+                    <button onClick={() => deleteItem('members', m.id)} className="text-[var(--accent-purple)] hover:scale-110 transition-transform"><Trash2 size={18}/></button>
                   </div>
                 </div>
               ))}
@@ -484,9 +484,9 @@ const AdminPanel = () => {
               {events.map(e => (
                 <div key={e.id} className="p-4 border border-white/10 bg-white/5 flex justify-between items-center hover:border-white/20 transition-all group">
                   <div onClick={() => setSelectedEventId(e.id)} className="cursor-pointer">
-                    <h3 className="text-lg group-hover:text-[var(--accent-pink)] transition-colors">{e.title}</h3>
+                    <h3 className="text-lg group-hover:text-[var(--accent-purple)] transition-colors">{e.title}</h3>
                     <div className="flex gap-4 text-[10px] font-bold uppercase tracking-widest">
-                      <p className="text-[var(--accent-pink)]">{e.type}</p>
+                      <p className="text-[var(--accent-purple)]">{e.type}</p>
                       <p className="text-white/20">|</p>
                       <p className="text-white/40">{e.participant_count || 0} COUREURS</p>
                       <p className="text-white/20">|</p>
@@ -495,7 +495,7 @@ const AdminPanel = () => {
                   </div>
                   <div className="flex gap-4">
                     <button onClick={() => {setNewEvent({...e}); setEditingEventId(e.id); window.scrollTo(0,0);}} className="text-[var(--accent-cyan)]"><Edit2 size={18}/></button>
-                    <button onClick={() => deleteItem('events', e.id)} className="text-[var(--accent-pink)]"><Trash2 size={18}/></button>
+                    <button onClick={() => deleteItem('events', e.id)} className="text-[var(--accent-purple)]"><Trash2 size={18}/></button>
                   </div>
                 </div>
               ))}
@@ -520,7 +520,7 @@ const AdminPanel = () => {
               {gallery.map(img => (
                 <div key={img.id} className="relative aspect-video group border border-white/10 overflow-hidden">
                   <img src={img.url?.startsWith('/') ? `${BASE_URL}${img.url}` : img.url} className="w-full h-full object-cover" />
-                  <button onClick={() => deleteItem('gallery', img.id)} className="absolute inset-0 m-auto bg-[var(--accent-pink)] p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-fit h-fit"><Trash2 size={20}/></button>
+                  <button onClick={() => deleteItem('gallery', img.id)} className="absolute inset-0 m-auto bg-[var(--accent-purple)] p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-fit h-fit"><Trash2 size={20}/></button>
                 </div>
               ))}
             </div>

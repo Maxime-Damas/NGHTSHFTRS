@@ -97,14 +97,14 @@ const ProfilePage = () => {
 
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center font-mono">
-      <div className="text-[var(--accent-pink)] animate-pulse uppercase tracking-[0.5em]">Initialisation_Système...</div>
+      <div className="text-[var(--accent-purple)] animate-pulse uppercase tracking-[0.5em]">Initialisation_Système...</div>
     </div>
   );
 
   if (error || !profile) return (
     <div className="min-h-screen bg-black flex items-center justify-center font-mono">
       <div className="text-red-500 uppercase tracking-[0.2em] text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
+        <h1 className="text-4xl font-bold mb-4 font-heading">404</h1>
         <p>Profil non trouvé ou désactivé</p>
       </div>
     </div>
@@ -182,11 +182,11 @@ const ProfilePage = () => {
           {/* Accent decoration */}
           <div 
             className="absolute top-0 left-0 w-full h-1" 
-            style={{ backgroundColor: profile.theme_color || '#ff2d55' }}
+            style={{ backgroundColor: profile.theme_color || '#C200FB' }}
           />
           <div 
             className="absolute -top-24 -right-24 w-48 h-48 rounded-full blur-[100px] opacity-20"
-            style={{ backgroundColor: profile.theme_color || '#ff2d55' }}
+            style={{ backgroundColor: profile.theme_color || '#C200FB' }}
           />
 
           {/* Profile Header */}
@@ -199,17 +199,20 @@ const ProfilePage = () => {
                 src={getImgUrl(profile.profile_photo)} 
                 alt={profile.nickname}
                 className="w-32 h-32 rounded-full object-cover border-2 shadow-lg"
-                style={{ borderColor: profile.theme_color || '#ff2d55' }}
+                style={{ borderColor: profile.theme_color || '#C200FB' }}
               />
               <div 
                 className="absolute -bottom-2 -right-2 p-2 bg-black border border-white/10 rounded-full"
-                style={{ color: profile.theme_color || '#ff2d55' }}
+                style={{ color: profile.theme_color || '#C200FB' }}
               >
                 <Trophy size={16} />
               </div>
             </motion.div>
 
-            <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-2 italic">
+            <h1 
+              className="text-4xl font-black italic uppercase tracking-tighter mb-2 italic"
+              style={{ fontFamily: profile.nickname_font || 'Speed Beast' }}
+            >
               {profile.nickname}
             </h1>
             
@@ -231,7 +234,7 @@ const ProfilePage = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -2 }}
                   className="p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
-                  style={{ color: profile.theme_color || '#ff2d55' }}
+                  style={{ color: profile.theme_color || '#C200FB' }}
                   title={link.platform}
                 >
                   <SocialIcon platform={link.platform} />
@@ -262,7 +265,7 @@ const ProfilePage = () => {
                   </div>
                 )}
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
-                  <p className="text-white font-bold uppercase italic text-lg">{profile.car_model}</p>
+                  <p className="text-white font-bold uppercase italic text-lg font-heading">{profile.car_model}</p>
                 </div>
               </div>
             </div>
@@ -289,7 +292,7 @@ const ProfilePage = () => {
                 }}
               >
                 <div className="flex items-center gap-4 overflow-hidden">
-                  <div className={`w-10 h-10 rounded flex items-center justify-center bg-black border border-white/10 text-[var(--accent-pink)] ${isPlaying ? 'animate-pulse' : ''}`}>
+                  <div className={`w-10 h-10 rounded flex items-center justify-center bg-black border border-white/10 text-[var(--accent-purple)] ${isPlaying ? 'animate-pulse' : ''}`}>
                     <Music size={18} />
                   </div>
                   <div className="overflow-hidden">
@@ -320,7 +323,7 @@ const ProfilePage = () => {
               <p className="text-xl font-black italic">{profile.wins_2nd}</p>
             </div>
             <div className="text-center">
-              <p className="text-[8px] text-[var(--accent-pink)] font-black uppercase tracking-widest mb-1">3E</p>
+              <p className="text-[8px] text-[var(--accent-purple)] font-black uppercase tracking-widest mb-1">3E</p>
               <p className="text-xl font-black italic">{profile.wins_3rd}</p>
             </div>
           </div>

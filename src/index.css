@@ -1,14 +1,23 @@
+@font-face {
+  font-family: 'Speed Beast';
+  src: url('/fonts/SpeedBeast.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg-color: #050505;
   --text-primary: #ffffff;
   --text-secondary: #a0a0a0;
-  --accent-pink: #FF0055;
-  --accent-cyan: #00F2FF;
-  --accent-yellow: #FFD700;
+  --accent-purple: #C200FB;
+  --accent-yellow: #FFF200;
+  --accent-cyan: #FFF200; /* Replaced Cyan with Cyber Yellow */
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Michroma', sans-serif; /* Fallback for now */
+  --font-heading: 'Michroma', sans-serif; /* Back to Michroma for general titles */
+  --font-speed: 'Speed Beast', sans-serif; /* Special class for big titles */
 }
 
 * {
@@ -58,10 +67,14 @@ button {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-pink);
+  background: var(--accent-purple);
 }
 
 /* Glitch Effect Utility */
+.font-speed {
+  font-family: var(--font-speed) !important;
+}
+
 .glitch-text {
   position: relative;
   display: inline-block;
@@ -80,7 +93,7 @@ button {
 
 .glitch-text:hover::before, .glitch-active::before {
   left: 2px;
-  text-shadow: -2px 0 var(--accent-pink);
+  text-shadow: -2px 0 var(--accent-purple);
   clip: rect(44px, 450px, 56px, 0);
   animation: glitch-anim 2s infinite linear alternate-reverse;
 }

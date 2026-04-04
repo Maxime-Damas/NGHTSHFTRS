@@ -29,7 +29,9 @@ const FONTS = [
   'JetBrains Mono',
   'Bebas Neue',
   'Playfair Display',
-  'UnifrakturMaguntia'
+  'UnifrakturMaguntia',
+  'Michroma',
+  'Speed Beast'
 ];
 
 const PLATFORMS = [
@@ -45,8 +47,9 @@ const PLATFORMS = [
 const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (member: any) => void, onBack: () => void }) => {
   const [formData, setFormData] = useState({
     bio: member.bio || '',
-    theme_color: member.theme_color || '#ff2d55',
+    theme_color: member.theme_color || '#C200FB',
     font_family: member.font_family || 'Inter',
+    nickname_font: member.nickname_font || 'Speed Beast',
     background_url: member.background_url || '',
     music_url: member.music_url || '',
     show_car: member.show_car === undefined ? true : member.show_car,
@@ -111,7 +114,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
           <button onClick={onBack} className="text-white/40 hover:text-white flex items-center gap-2 text-[10px] uppercase font-black">
             <ArrowLeft size={14} /> Retour
           </button>
-          <h2 className="text-sm font-black italic tracking-tighter uppercase">Config_Profil</h2>
+          <h2 className="text-sm font-black italic tracking-tighter uppercase font-speed">Config_Profil</h2>
         </div>
 
         <div className="flex border-b border-white/10 bg-black/20">
@@ -119,7 +122,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-4 text-[8px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-[var(--accent-pink)] text-white' : 'text-white/20 hover:text-white/40'}`}
+              className={`flex-1 py-4 text-[8px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-[var(--accent-purple)] text-white' : 'text-white/20 hover:text-white/40'}`}
             >
               {tab === 'general' ? 'Général' : 'Apparence'}
             </button>
@@ -145,7 +148,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                       <p><span className="text-white font-mono">- Liste</span> : Puces</p>
                       <p><span className="text-white font-mono">&gt; Citation</span> : Bloc stylisé</p>
                       <p><span className="text-white font-mono">[Texte](Lien)</span> : Lien URL</p>
-                      <p className="pt-1 border-t border-white/5 text-[8px] italic text-[var(--accent-pink)]">Les sauts de ligne sont automatiques.</p>
+                      <p className="pt-1 border-t border-white/5 text-[8px] italic text-[var(--accent-purple)]">Les sauts de ligne sont automatiques.</p>
                     </div>
                   </div>
                 </label>
@@ -154,7 +157,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                   value={formData.bio}
                   onChange={handleChange}
                   placeholder="Écris quelque chose sur toi..."
-                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-pink)] min-h-[120px] transition-all"
+                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-purple)] min-h-[120px] transition-all"
                 />
               </div>
 
@@ -168,7 +171,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                   value={formData.music_url}
                   onChange={handleChange}
                   placeholder="https://soundcloud.com/..."
-                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-pink)] transition-all"
+                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-purple)] transition-all"
                 />
               </div>
 
@@ -179,7 +182,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                   name="show_car"
                   checked={formData.show_car}
                   onChange={(e) => setFormData(prev => ({ ...prev, show_car: e.target.checked }))}
-                  className="w-5 h-5 accent-[var(--accent-pink)] cursor-pointer"
+                  className="w-5 h-5 accent-[var(--accent-purple)] cursor-pointer"
                 />
               </div>
             </motion.div>
@@ -211,13 +214,29 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
-                  <Type size={12} /> Police d'écriture
+                  <Type size={12} /> Police du Pseudo
+                </label>
+                <select
+                  name="nickname_font"
+                  value={formData.nickname_font}
+                  onChange={handleChange}
+                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-purple)] transition-all appearance-none"
+                >
+                  {FONTS.map(font => (
+                    <option key={font} value={font} style={{ fontFamily: font }}>{font}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
+                  <Type size={12} /> Police de la Bio
                 </label>
                 <select
                   name="font_family"
                   value={formData.font_family}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-pink)] transition-all appearance-none"
+                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-purple)] transition-all appearance-none"
                 >
                   {FONTS.map(font => (
                     <option key={font} value={font} style={{ fontFamily: font }}>{font}</option>
@@ -237,7 +256,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                     value={formData.background_url}
                     onChange={handleChange}
                     placeholder="URL de l'image ou du GIF..."
-                    className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-pink)] transition-all"
+                    className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-purple)] transition-all"
                   />
                   <button 
                     onClick={() => setShowGifSearch(true)}
@@ -259,7 +278,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                       min="0" max="20" 
                       value={formData.blur_intensity} 
                       onChange={handleChange}
-                      className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--accent-pink)]"
+                      className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--accent-purple)]"
                     />
                   </div>
 
@@ -274,7 +293,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                       min="0" max="100" 
                       value={formData.bg_grayscale} 
                       onChange={handleChange}
-                      className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--accent-pink)]"
+                      className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--accent-purple)]"
                     />
                   </div>
                 </div>
@@ -287,7 +306,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
           <button
             onClick={handleSave}
             disabled={saving}
-            className={`w-full py-4 bg-white text-black font-black uppercase text-xs tracking-widest hover:bg-[var(--accent-pink)] hover:text-white transition-all flex items-center justify-center gap-2 ${saving ? 'opacity-50' : ''}`}
+            className={`w-full py-4 bg-white text-black font-black uppercase text-xs tracking-widest hover:bg-[var(--accent-purple)] hover:text-white transition-all flex items-center justify-center gap-2 ${saving ? 'opacity-50' : ''}`}
           >
             {saving ? 'Synchronisation...' : <><Save size={16} /> Sauvegarder</>}
           </button>
@@ -348,7 +367,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                 <input 
                   type="text" 
                   placeholder="Chercher sur Tenor / Giphy..." 
-                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-pink)]"
+                  className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-purple)]"
                 />
                 
                 <div className="grid grid-cols-3 gap-2 h-96 overflow-y-auto custom-scrollbar p-2">
@@ -416,15 +435,20 @@ const PreviewProfile = ({ profile }: { profile: any }) => {
 
       <div className="relative z-10 w-full max-w-xl">
         <div className="bg-black/40 backdrop-blur-2xl border border-white/10 p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: profile.theme_color || '#ff2d55' }} />
+          <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: profile.theme_color || '#C200FB' }} />
           
           <div className="flex flex-col items-center text-center mb-10">
             <img 
               src={getImgUrl(profile.profile_photo)} 
               className="w-24 h-24 rounded-full object-cover border-2 mb-4"
-              style={{ borderColor: profile.theme_color || '#ff2d55' }}
+              style={{ borderColor: profile.theme_color || '#C200FB' }}
             />
-            <h1 className="text-3xl font-black italic uppercase tracking-tighter mb-2">{profile.nickname}</h1>
+            <h1 
+              className="text-3xl font-black italic uppercase tracking-tighter mb-2"
+              style={{ fontFamily: profile.nickname_font || 'Speed Beast' }}
+            >
+              {profile.nickname}
+            </h1>
             <div className="text-white/60 text-xs max-w-sm prose prose-invert prose-xs bio-content">
               <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                 {profile.bio || 'Aucune bio définie'}

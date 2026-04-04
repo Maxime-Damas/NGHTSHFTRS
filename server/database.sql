@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS members (
     social_links TEXT,
     theme_color VARCHAR(20) DEFAULT '#ff2d55',
     font_family VARCHAR(50) DEFAULT 'Inter',
+    nickname_font VARCHAR(50) DEFAULT 'Inter',
     background_url TEXT,
     music_url TEXT,
     show_car BOOLEAN DEFAULT TRUE,

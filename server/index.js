@@ -154,7 +154,7 @@ app.get('/api/events/:id/participation-status/:memberId', (req, res) => {
 // GET MEMBER PROFILE (Public)
 app.get('/api/profile/:nickname', (req, res) => {
     const query = `
-        SELECT nickname, profile_photo, bio, social_links, theme_color, font_family, background_url, music_url, show_car, car_model, car_photo, wins_1st, wins_2nd, wins_3rd 
+        SELECT nickname, profile_photo, bio, social_links, theme_color, font_family, nickname_font, background_url, music_url, show_car, car_model, car_photo, wins_1st, wins_2nd, wins_3rd 
         FROM members 
         WHERE nickname = ?
     `;
@@ -167,7 +167,7 @@ app.get('/api/profile/:nickname', (req, res) => {
 
 // UPDATE MEMBER PROFILE (Private)
 app.put('/api/member/profile', (req, res) => {
-    const { access_code, bio, social_links, theme_color, font_family, background_url, music_url, show_car } = req.body;
+    const { access_code, bio, social_links, theme_color, font_family, nickname_font, background_url, music_url, show_car } = req.body;
     
     // First verify access code
     db.query('SELECT id FROM members WHERE access_code = ?', [access_code], (err, results) => {
@@ -177,7 +177,7 @@ app.put('/api/member/profile', (req, res) => {
         const memberId = results[0].id;
         const query = `
             UPDATE members 
-            SET bio = ?, social_links = ?, theme_color = ?, font_family = ?, background_url = ?, music_url = ?, show_car = ? 
+            SET bio = ?, social_links = ?, theme_color = ?, font_family = ?, nickname_font = ?, background_url = ?, music_url = ?, show_car = ? 
             WHERE id = ?
         `;
         const values = [
@@ -185,6 +185,7 @@ app.put('/api/member/profile', (req, res) => {
             typeof social_links === 'string' ? social_links : JSON.stringify(social_links || []), 
             theme_color || '#ff2d55', 
             font_family || 'Inter', 
+            nickname_font || 'Inter',
             background_url || '', 
             music_url || '', 
             show_car !== undefined ? show_car : true, 
@@ -207,6 +208,15 @@ app.post('/api/events/:id/register', (req, res) => {
             return res.status(500).json(err);
         }
         res.json({ message: 'Registration successful!' });
+    });
+});
+
+// UNREGISTER FROM EVENT (Public)
+app.post('/api/events/:id/unregister', (req, res) => {
+    const { memberId } = req.body;
+    db.query('DELETE FROM participations WHERE event_id = ? AND member_id = ?', [req.params.id, memberId], (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: 'Unregistration successful!' });
     });
 });
 
