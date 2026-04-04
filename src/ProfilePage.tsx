@@ -63,7 +63,42 @@ const ProfilePage = () => {
   const [error, setError] = useState(false);
   const [entered, setEntered] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.1);
+  const [musicTitle, setMusicTitle] = useState<string>('Système Audio Actif');
   const audioRef = React.useRef<HTMLAudioElement>(null);
+  const scWidgetRef = React.useRef<any>(null);
+
+  // Initializing SoundCloud Widget when entered
+  useEffect(() => {
+    if (entered && profile?.music_url?.includes('soundcloud.com')) {
+      const iframe = document.getElementById('sc-player');
+      if (iframe && (window as any).SC) {
+        const widget = (window as any).SC.Widget(iframe);
+        scWidgetRef.current = widget;
+
+        widget.bind((window as any).SC.Widget.Events.READY, () => {
+          widget.setVolume(volume * 100);
+          widget.play();
+
+          // Fetch track title
+          widget.getCurrentSound((sound: any) => {
+            if (sound && sound.title) {
+              setMusicTitle(sound.title);
+            }
+          });
+        });
+      }
+    }
+  }, [entered, profile]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+    if (scWidgetRef.current) {
+      scWidgetRef.current.setVolume(volume * 100);
+    }
+  }, [volume]);
 
   useEffect(() => {
     fetch(`${API_URL}/profile/${nickname}`)
@@ -85,6 +120,7 @@ const ProfilePage = () => {
     setEntered(true);
     setIsPlaying(true);
     if (audioRef.current) {
+      audioRef.current.volume = volume;
       audioRef.current.play().catch(e => console.log("Playback failed:", e));
     }
   };
@@ -135,6 +171,7 @@ const ProfilePage = () => {
           isSoundCloud ? (
             entered && (
               <iframe 
+                id="sc-player"
                 allow="autoplay" 
                 src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(profile.music_url)}&auto_play=true`}
               ></iframe>
@@ -280,34 +317,62 @@ const ProfilePage = () => {
                 <div className="h-px flex-1 bg-white/10" />
               </div>
               
-              <div 
-                className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-lg group/player hover:bg-white/10 transition-all cursor-pointer"
-                onClick={() => {
-                  if (isSoundCloud || isYouTube) return; // Cannot easily pause/play hidden iframes without complex API
-                  if (audioRef.current) {
-                    if (isPlaying) audioRef.current.pause();
-                    else audioRef.current.play();
-                    setIsPlaying(!isPlaying);
-                  }
-                }}
-              >
-                <div className="flex items-center gap-4 overflow-hidden">
-                  <div className={`w-10 h-10 rounded flex items-center justify-center bg-black border border-white/10 text-[var(--accent-purple)] ${isPlaying ? 'animate-pulse' : ''}`}>
-                    <Music size={18} />
-                  </div>
-                  <div className="overflow-hidden">
-                    <p className="text-[10px] font-black uppercase tracking-tighter truncate text-white">Système Audio Actif</p>
-                    <p className="text-[8px] font-bold uppercase text-white/40 tracking-widest">
-                      {isSoundCloud ? 'Source: SoundCloud' : isYouTube ? 'Source: YouTube' : 'Source: Audio Log'}
-                    </p>
-                  </div>
-                </div>
-                
+              <div className="space-y-4">
                 <div 
-                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all"
+                  className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-lg group/player hover:bg-white/10 transition-all cursor-pointer"
+                  onClick={() => {
+                    if (isYouTube) return; 
+                    if (isSoundCloud && scWidgetRef.current) {
+                      if (isPlaying) scWidgetRef.current.pause();
+                      else scWidgetRef.current.play();
+                      setIsPlaying(!isPlaying);
+                      return;
+                    }
+                    if (audioRef.current) {
+                      if (isPlaying) {
+                        audioRef.current.pause();
+                        setIsPlaying(false);
+                      } else {
+                        audioRef.current.play();
+                        setIsPlaying(true);
+                      }
+                    }
+                  }}
                 >
-                  {isPlaying ? <div className="flex gap-1"><div className="w-1 h-3 bg-current" /><div className="w-1 h-3 bg-current" /></div> : <div className="ml-1 w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-current border-b-[6px] border-b-transparent" />}
+                  <div className="flex items-center gap-4 overflow-hidden">
+                    <div className={`w-10 h-10 rounded flex items-center justify-center bg-black border border-white/10 text-[var(--accent-purple)] ${isPlaying ? 'animate-pulse' : ''}`}>
+                      <Music size={18} />
+                    </div>
+                    <div className="overflow-hidden">
+                      <p className="text-[10px] font-black uppercase tracking-tighter truncate text-white">{musicTitle}</p>
+                      <p className="text-[8px] font-bold uppercase text-white/40 tracking-widest">
+                        {isSoundCloud ? 'Source: SoundCloud' : isYouTube ? 'Source: YouTube' : 'Source: Audio Log'}
+                      </p>
+                    </div>                  </div>
+                  
+                  <div 
+                    className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all"
+                  >
+                    {isPlaying ? <div className="flex gap-1"><div className="w-1 h-3 bg-current" /><div className="w-1 h-3 bg-current" /></div> : <div className="ml-1 w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-current border-b-[6px] border-b-transparent" />}
+                  </div>
                 </div>
+
+                {/* Volume Slider - For Direct Links AND SoundCloud */}
+                {!isYouTube && (
+                  <div className="flex items-center gap-4 px-2" onClick={(e) => e.stopPropagation()}>
+                    <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">VOL</span>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="1" 
+                      step="0.01" 
+                      value={volume} 
+                      onChange={(e) => setVolume(parseFloat(e.target.value))}
+                      className="flex-1 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--accent-purple)]"
+                    />
+                    <span className="text-[8px] font-black text-white/40 w-6 text-right">{Math.round(volume * 100)}%</span>
+                  </div>
+                )}
               </div>
             </div>
           )}
