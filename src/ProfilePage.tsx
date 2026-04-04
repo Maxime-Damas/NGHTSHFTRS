@@ -397,7 +397,7 @@ const ProfilePage = () => {
         {/* Footer info */}
         <div className="mt-8 flex justify-between items-center text-[8px] font-black uppercase tracking-[0.3em] text-white/20">
           <span>NGHTSHFTRS // SYSTEM_PROFILE</span>
-          <a href="/" className="hover:text-white transition-colors">Rejoindre le Syndicat</a>
+          <a href="/" className="hover:text-white transition-colors">Retour à l'accueil</a>
         </div>
       </motion.div>
 
