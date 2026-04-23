@@ -9,7 +9,6 @@ import {
   Music, 
   Car, 
   Trophy, 
-  ExternalLink,
   Disc as Discord,
   Youtube,
   Twitch
@@ -190,7 +189,17 @@ const ProfilePage = () => {
       </div>
       {/* Background Layer */}
       <div className="fixed inset-0 z-0">
-        {profile.background_url ? (
+        {profile.background_video_url ? (
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <iframe
+              className="w-full h-full scale-[1.5]"
+              src={`https://www.youtube.com/embed/${profile.background_video_url.split('v=')[1] || profile.background_video_url.split('/').pop()}?autoplay=1&mute=1&controls=0&loop=1&playlist=${profile.background_video_url.split('v=')[1] || profile.background_video_url.split('/').pop()}&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1`}
+              allow="autoplay; encrypted-media"
+              style={{ filter: `blur(${profile.blur_intensity || 0}px) grayscale(${profile.bg_grayscale || 0}%)`, opacity: 0.4 }}
+            ></iframe>
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        ) : profile.background_url ? (
           <div className="absolute inset-0">
             <img 
               src={profile.background_url} 

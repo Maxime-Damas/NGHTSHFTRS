@@ -36,8 +36,10 @@ CREATE TABLE IF NOT EXISTS members (
     font_family VARCHAR(50) DEFAULT 'Inter',
     nickname_font VARCHAR(50) DEFAULT 'Inter',
     background_url TEXT,
+    background_video_url TEXT,
     music_url TEXT,
     show_car BOOLEAN DEFAULT TRUE,
+    role ENUM('Member', 'Trusted', 'Admin') DEFAULT 'Member',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

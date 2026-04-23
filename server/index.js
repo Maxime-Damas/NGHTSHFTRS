@@ -154,7 +154,7 @@ app.get('/api/events/:id/participation-status/:memberId', (req, res) => {
 // GET MEMBER PROFILE (Public)
 app.get('/api/profile/:nickname', (req, res) => {
     const query = `
-        SELECT nickname, profile_photo, bio, social_links, theme_color, font_family, nickname_font, background_url, music_url, show_car, car_model, car_photo, wins_1st, wins_2nd, wins_3rd 
+        SELECT nickname, profile_photo, bio, social_links, theme_color, font_family, nickname_font, background_url, background_video_url, music_url, show_car, car_model, car_photo, wins_1st, wins_2nd, wins_3rd, role 
         FROM members 
         WHERE nickname = ?
     `;
@@ -167,17 +167,20 @@ app.get('/api/profile/:nickname', (req, res) => {
 
 // UPDATE MEMBER PROFILE (Private)
 app.put('/api/member/profile', (req, res) => {
-    const { access_code, bio, social_links, theme_color, font_family, nickname_font, background_url, music_url, show_car } = req.body;
+    const { access_code, bio, social_links, theme_color, font_family, nickname_font, background_url, background_video_url, music_url, show_car } = req.body;
     
-    // First verify access code
-    db.query('SELECT id FROM members WHERE access_code = ?', [access_code], (err, results) => {
+    // First verify access code and get member info
+    db.query('SELECT id, role FROM members WHERE access_code = ?', [access_code], (err, results) => {
         if (err) return res.status(500).json(err);
         if (results.length === 0) return res.status(401).json({ message: 'ACCESS DENIED' });
 
-        const memberId = results[0].id;
+        const member = results[0];
+        const memberId = member.id;
+        const isTrusted = member.role === 'Trusted' || member.role === 'Admin';
+
         const query = `
             UPDATE members 
-            SET bio = ?, social_links = ?, theme_color = ?, font_family = ?, nickname_font = ?, background_url = ?, music_url = ?, show_car = ? 
+            SET bio = ?, social_links = ?, theme_color = ?, font_family = ?, nickname_font = ?, background_url = ?, background_video_url = ?, music_url = ?, show_car = ? 
             WHERE id = ?
         `;
         const values = [
@@ -187,6 +190,7 @@ app.put('/api/member/profile', (req, res) => {
             font_family || 'Inter', 
             nickname_font || 'Inter',
             background_url || '', 
+            isTrusted ? (background_video_url || '') : '', // Only trusted members can save video URL
             music_url || '', 
             show_car !== undefined ? show_car : true, 
             memberId
@@ -265,21 +269,21 @@ const memberUploadFields = [
 ];
 
 app.post('/api/admin/members', authenticateToken, upload.fields(memberUploadFields), (req, res) => {
-    const { nickname, car_model, access_code, wins_1st, wins_2nd, wins_3rd } = req.body;
+    const { nickname, car_model, access_code, wins_1st, wins_2nd, wins_3rd, role } = req.body;
     
     const car_photo = req.files['car_photo'] ? req.files['car_photo'][0].path : req.body.car_photo;
     const id_card_photo = req.files['id_card_photo'] ? req.files['id_card_photo'][0].path : req.body.id_card_photo;
     const profile_photo = req.files['profile_photo'] ? req.files['profile_photo'][0].path : req.body.profile_photo;
 
-    db.query('INSERT INTO members (nickname, car_model, car_photo, id_card_photo, profile_photo, access_code, wins_1st, wins_2nd, wins_3rd) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-    [nickname, car_model, car_photo, id_card_photo, profile_photo, access_code, wins_1st || 0, wins_2nd || 0, wins_3rd || 0], (err) => {
+    db.query('INSERT INTO members (nickname, car_model, car_photo, id_card_photo, profile_photo, access_code, wins_1st, wins_2nd, wins_3rd, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+    [nickname, car_model, car_photo, id_card_photo, profile_photo, access_code, wins_1st || 0, wins_2nd || 0, wins_3rd || 0, role || 'Member'], (err) => {
         if (err) return res.status(500).json(err);
         res.json({ message: 'Member created!' });
     });
 });
 
 app.put('/api/admin/members/:id', authenticateToken, upload.fields(memberUploadFields), (req, res) => {
-    const { nickname, car_model, access_code, wins_1st, wins_2nd, wins_3rd } = req.body;
+    const { nickname, car_model, access_code, wins_1st, wins_2nd, wins_3rd, role } = req.body;
     
     let car_photo = req.body.car_photo;
     let id_card_photo = req.body.id_card_photo;
@@ -289,8 +293,8 @@ app.put('/api/admin/members/:id', authenticateToken, upload.fields(memberUploadF
     if (req.files['id_card_photo']) id_card_photo = req.files['id_card_photo'][0].path;
     if (req.files['profile_photo']) profile_photo = req.files['profile_photo'][0].path;
 
-    db.query('UPDATE members SET nickname=?, car_model=?, car_photo=?, id_card_photo=?, profile_photo=?, access_code=?, wins_1st=?, wins_2nd=?, wins_3rd=? WHERE id=?', 
-    [nickname, car_model, car_photo, id_card_photo, profile_photo, access_code, wins_1st, wins_2nd, wins_3rd, req.params.id], (err) => {
+    db.query('UPDATE members SET nickname=?, car_model=?, car_photo=?, id_card_photo=?, profile_photo=?, access_code=?, wins_1st=?, wins_2nd=?, wins_3rd=?, role=? WHERE id=?', 
+    [nickname, car_model, car_photo, id_card_photo, profile_photo, access_code, wins_1st, wins_2nd, wins_3rd, role, req.params.id], (err) => {
         if (err) return res.status(500).json(err);
         res.json({ message: 'Member updated!' });
     });

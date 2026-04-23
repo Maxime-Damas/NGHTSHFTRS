@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Save, 
   ArrowLeft, 
-  Plus, 
-  Trash2, 
   ExternalLink, 
   Palette, 
   Type, 
@@ -17,7 +15,6 @@ import {
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
-import ProfilePage from './ProfilePage';
 import API_URL from './config';
 
 const FONTS = [
@@ -34,16 +31,6 @@ const FONTS = [
   'Speed Beast'
 ];
 
-const PLATFORMS = [
-  'Instagram',
-  'Twitter',
-  'Discord',
-  'YouTube',
-  'Github',
-  'Twitch',
-  'Other'
-];
-
 const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (member: any) => void, onBack: () => void }) => {
   const [formData, setFormData] = useState({
     bio: member.bio || '',
@@ -51,6 +38,7 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
     font_family: member.font_family || 'Inter',
     nickname_font: member.nickname_font || 'Speed Beast',
     background_url: member.background_url || '',
+    background_video_url: member.background_video_url || '',
     music_url: member.music_url || '',
     show_car: member.show_car === undefined ? true : member.show_car,
     blur_intensity: member.blur_intensity || 2,
@@ -258,6 +246,24 @@ const ProfileEditor = ({ member, onUpdate, onBack }: { member: any, onUpdate: (m
                     placeholder="URL de l'image ou du GIF..."
                     className="w-full bg-white/5 border border-white/10 p-4 text-xs outline-none focus:border-[var(--accent-purple)] transition-all"
                   />
+                  
+                  {(member.role === 'Trusted' || member.role === 'Admin') && (
+                    <div className="pt-2 space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-[var(--accent-cyan)] flex items-center gap-2">
+                        <Share2 size={10} /> Background Vidéo (YouTube) - Trusted Only
+                      </label>
+                      <input
+                        type="text"
+                        name="background_video_url"
+                        value={formData.background_video_url}
+                        onChange={handleChange}
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        className="w-full bg-[var(--accent-cyan)]/5 border border-[var(--accent-cyan)]/20 p-4 text-xs outline-none focus:border-[var(--accent-cyan)] transition-all"
+                      />
+                      <p className="text-[7px] text-white/30 italic uppercase">Prioritaire sur l'image si rempli.</p>
+                    </div>
+                  )}
+
                   <button 
                     onClick={() => setShowGifSearch(true)}
                     className="w-full py-2 bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
@@ -415,7 +421,17 @@ const PreviewProfile = ({ profile }: { profile: any }) => {
       }}
     >
       <div className="fixed inset-0 z-0">
-        {profile.background_url ? (
+        {profile.background_video_url ? (
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <iframe
+              className="w-full h-full scale-[1.5]"
+              src={`https://www.youtube.com/embed/${profile.background_video_url.split('v=')[1] || profile.background_video_url.split('/').pop()}?autoplay=1&mute=1&controls=0&loop=1&playlist=${profile.background_video_url.split('v=')[1] || profile.background_video_url.split('/').pop()}&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1`}
+              allow="autoplay; encrypted-media"
+              style={{ filter: `blur(${profile.blur_intensity || 0}px) grayscale(${profile.bg_grayscale || 0}%)`, opacity: 0.4 }}
+            ></iframe>
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        ) : profile.background_url ? (
           <div className="absolute inset-0">
             <img 
               src={profile.background_url} 

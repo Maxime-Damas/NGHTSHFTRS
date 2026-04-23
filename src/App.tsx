@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Trophy, Camera, Disc, ChevronRight, Menu, X, Map as MapIcon, Route as RouteIcon, ShieldAlert, Key, Car, UserCircle, CreditCard, LogOut, Settings, ExternalLink } from 'lucide-react';
+import { Trophy, ShieldAlert, Car, UserCircle, LogOut, Settings } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 import ProfilePage from './ProfilePage';
 import ProfileEditor from './ProfileEditor';
 import API_URL from './config';
+import LegalSite from './LegalSite';
 
 const getImgUrl = (path: string) => {
   if (!path) return '';
@@ -312,6 +313,20 @@ const Gallery = () => {
   );
 };
 
+const DarkDashboard = ({ member, onLogout, onEditProfile }: { member: any, onLogout: () => void, onEditProfile: () => void }) => (
+  <div className="crt bg-black min-h-screen">
+    <Navbar member={member} onLogout={onLogout} onEditProfile={onEditProfile} />
+    <Hero member={member} />
+    <Leaderboard />
+    <ProfileDetails member={member} />
+    <Events member={member} />
+    <Gallery />
+    <footer className="py-12 bg-black text-center text-[8px] text-white/10 uppercase tracking-[1em]">
+      Protocol: NGHT-SYND-2026
+    </footer>
+  </div>
+);
+
 // --- COMPOSANT APP PRINCIPAL : LA LOGIQUE DE CHARGEMENT EST ICI ---
 const App = () => {
   const [member, setMember] = useState<any | null>(null);
@@ -320,10 +335,9 @@ const App = () => {
   const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
-    let splashTimer: NodeJS.Timeout;
+    let splashTimer: any;
 
     const syncMember = async () => {
-      // 1. On lance un chrono : si dans 1s le serveur n'a pas répondu, on montre le splash
       splashTimer = setTimeout(() => {
         setShowSplash(true);
       }, 1000); 
@@ -341,16 +355,14 @@ const App = () => {
           const data = await res.json();
           if (data.status === 'granted') setMember(data.member);
         } else {
-          // Réveil discret du serveur si pas de session
           await fetch(`${API_URL}/leaderboard`).catch(() => {});
         }
       } catch (e) {
         console.error("Serveur en cours de réveil...");
       } finally {
-        // 2. Le serveur a répondu (ou a échoué) ! 
-        clearTimeout(splashTimer); // On annule le chrono du splash
-        setIsInitialCheck(false);  // On finit le chargement initial
-        setShowSplash(false);      // On cache le splash s'il était affiché
+        clearTimeout(splashTimer);
+        setIsInitialCheck(false);
+        setShowSplash(false);
       }
     };
 
@@ -358,20 +370,14 @@ const App = () => {
     return () => clearTimeout(splashTimer);
   }, []);
 
-  // --- LOGIQUE D'AFFICHAGE ---
-  
-  // Si on attend encore le serveur ET que le délai de 1s est dépassé : Splash Screen
   if (isInitialCheck && showSplash) {
     return <WarmingUpScreen />;
   }
 
-  // Si on vérifie encore mais que ça fait moins d'une seconde : Écran noir (ou rien)
-  // Cela évite le flash blanc/rouge si le serveur répond en 0.2s
   if (isInitialCheck) {
     return <div style={{ backgroundColor: 'black', height: '100vh' }} />;
   }
 
-  // Une fois vérifié, on affiche le site normalement
   const handleLogout = () => { 
     localStorage.removeItem('memberAccess'); 
     setMember(null); 
@@ -383,23 +389,14 @@ const App = () => {
       <Routes>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/u/:nickname" element={<ProfilePage />} />
-        <Route path="/" element={!member ? (
+        <Route path="/" element={<LegalSite />} />
+        <Route path="/portal" element={!member ? (
           <SecurityGate onGrant={setMember} />
         ) : (
           showEditor ? (
             <ProfileEditor member={member} onUpdate={setMember} onBack={() => setShowEditor(false)} />
           ) : (
-            <div className="crt bg-black min-h-screen">
-              <Navbar member={member} onLogout={handleLogout} onEditProfile={() => setShowEditor(true)} />
-              <Hero member={member} />
-              <Leaderboard />
-              <ProfileDetails member={member} />
-              <Events member={member} />
-              <Gallery />
-              <footer className="py-12 bg-black text-center text-[8px] text-white/10 uppercase tracking-[1em]">
-                Protocol: NGHT-SYND-2026
-              </footer>
-            </div>
+            <DarkDashboard member={member} onLogout={handleLogout} onEditProfile={() => setShowEditor(true)} />
           )
         )} />
       </Routes>

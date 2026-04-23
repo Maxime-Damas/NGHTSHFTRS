@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Image as ImageIcon, Users, LogOut, Plus, Trash2, Edit2, ShieldAlert, Save, Key, UserCircle, Car, Trophy, Upload, X, Download } from 'lucide-react';
+import { Calendar, Image as ImageIcon, Users, LogOut, Plus, Trash2, Edit2, ShieldAlert, Save, Upload, X, Download } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import API_URL from './config';
@@ -9,7 +9,7 @@ const BASE_URL = API_URL.replace('/api', '');
 const EVENT_TYPES = ['Street Race', 'Car Meet', 'Toughe', 'Drift Trial', 'Other'];
 
 // --- REUSABLE IMAGE UPLOAD COMPONENT ---
-const ImageUpload = ({ label, value, onChange, fieldName }: { label: string, value: any, onChange: (file: File | string) => void, fieldName: string }) => {
+const ImageUpload = ({ label, value, onChange }: { label: string, value: any, onChange: (file: File | string) => void }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [urlInput, setUrlInput] = useState('');
@@ -131,7 +131,7 @@ const AdminPanel = () => {
   // Form states
   const [newEvent, setNewEvent] = useState<any>({ title: '', type: 'Street Race', date: '', location: '', location_image: null, route_image: null, reward: '', price: 0 });
   const [galleryImage, setGalleryImage] = useState<File | null>(null);
-  const [newMember, setNewMember] = useState<any>({ nickname: '', car_model: '', car_photo: null, id_card_photo: null, profile_photo: null, access_code: '', wins_1st: 0, wins_2nd: 0, wins_3rd: 0 });
+  const [newMember, setNewMember] = useState<any>({ nickname: '', car_model: '', car_photo: null, id_card_photo: null, profile_photo: null, access_code: '', wins_1st: 0, wins_2nd: 0, wins_3rd: 0, role: 'Member' });
 
   useEffect(() => {
     if (token) fetchData();
@@ -205,7 +205,18 @@ const AdminPanel = () => {
   };
 
   const startEditMember = (m: any) => {
-    setNewMember({ ...m });
+    setNewMember({ 
+      nickname: m.nickname || '',
+      car_model: m.car_model || '',
+      car_photo: m.car_photo || null,
+      id_card_photo: m.id_card_photo || null,
+      profile_photo: m.profile_photo || null,
+      access_code: m.access_code || '',
+      wins_1st: m.wins_1st || 0,
+      wins_2nd: m.wins_2nd || 0,
+      wins_3rd: m.wins_3rd || 0,
+      role: m.role || 'Member'
+    });
     setEditingMemberId(m.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -607,12 +618,17 @@ const AdminPanel = () => {
               <div className="col-span-1 space-y-4">
                 <input type="text" placeholder="PSEUDO" className="w-full bg-black p-3 border border-white/10 outline-none focus:border-[var(--accent-purple)] transition-colors" value={newMember.nickname} onChange={e => setNewMember({...newMember, nickname: e.target.value})} />
                 <input type="text" placeholder="CODE D'ACCÈS" className="w-full bg-black p-3 border border-white/10 text-[var(--accent-cyan)] outline-none focus:border-[var(--accent-cyan)] transition-colors" value={newMember.access_code} onChange={e => setNewMember({...newMember, access_code: e.target.value})} />
+                <select className="w-full bg-black p-3 border border-white/10 text-white outline-none focus:border-[var(--accent-purple)] transition-colors" value={newMember.role} onChange={e => setNewMember({...newMember, role: e.target.value})}>
+                  <option value="Member">Membre Standard</option>
+                  <option value="Trusted">Membre de Confiance (Trusted)</option>
+                  <option value="Admin">Administrateur</option>
+                </select>
                 <input type="text" placeholder="MODÈLE VÉHICULE" className="w-full bg-black p-3 border border-white/10 outline-none focus:border-white/30 transition-colors" value={newMember.car_model} onChange={e => setNewMember({...newMember, car_model: e.target.value})} />
               </div>
               
-              <ImageUpload label="Photo de Profil" value={newMember.profile_photo} onChange={(file) => setNewMember({...newMember, profile_photo: file})} fieldName="profile_photo" />
-              <ImageUpload label="Photo Véhicule" value={newMember.car_photo} onChange={(file) => setNewMember({...newMember, car_photo: file})} fieldName="car_photo" />
-              <ImageUpload label="Carte d'Identité" value={newMember.id_card_photo} onChange={(file) => setNewMember({...newMember, id_card_photo: file})} fieldName="id_card_photo" />
+              <ImageUpload label="Photo de Profil" value={newMember.profile_photo} onChange={(file) => setNewMember({...newMember, profile_photo: file})} />
+              <ImageUpload label="Photo Véhicule" value={newMember.car_photo} onChange={(file) => setNewMember({...newMember, car_photo: file})} />
+              <ImageUpload label="Carte d'Identité" value={newMember.id_card_photo} onChange={(file) => setNewMember({...newMember, id_card_photo: file})} />
 
               <div className="col-span-3 grid grid-cols-3 gap-4 border-t border-white/10 pt-4">
                 <div className="flex flex-col gap-2">
@@ -639,7 +655,11 @@ const AdminPanel = () => {
                   <div className="flex gap-6 items-center">
                     <img src={m.profile_photo?.startsWith('/') ? `${BASE_URL}${m.profile_photo}` : m.profile_photo} className="w-12 h-12 rounded-full object-cover border border-white/20" />
                     <div>
-                      <h3 className="text-lg">{m.nickname}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg">{m.nickname}</h3>
+                        {m.role === 'Trusted' && <span className="px-2 py-0.5 bg-[var(--accent-cyan)] text-black text-[7px] font-black uppercase rounded">Trusted</span>}
+                        {m.role === 'Admin' && <span className="px-2 py-0.5 bg-[var(--accent-purple)] text-white text-[7px] font-black uppercase rounded">Admin</span>}
+                      </div>
                       <p className="text-[var(--accent-cyan)] text-[10px] tracking-[0.3em]">{m.access_code}</p>
                     </div>
                     <div className="flex gap-8 ml-8 border-l border-white/10 pl-8">
@@ -687,8 +707,8 @@ const AdminPanel = () => {
                 <input type="text" placeholder="LIEU" className="bg-black p-3 border border-white/10 outline-none" value={newEvent.location} onChange={e => setNewEvent({...newEvent, location: e.target.value})} />
               </div>
               
-              <ImageUpload label="Image du Lieu" value={newEvent.location_image} onChange={(file) => setNewEvent({...newEvent, location_image: file})} fieldName="location_image" />
-              <ImageUpload label="Image du Tracé" value={newEvent.route_image} onChange={(file) => setNewEvent({...newEvent, route_image: file})} fieldName="route_image" />
+              <ImageUpload label="Image du Lieu" value={newEvent.location_image} onChange={(file) => setNewEvent({...newEvent, location_image: file})} />
+              <ImageUpload label="Image du Tracé" value={newEvent.route_image} onChange={(file) => setNewEvent({...newEvent, route_image: file})} />
 
               <input type="text" placeholder="RÉCOMPENSE" className="bg-black p-3 border border-white/10 col-span-2 outline-none" value={newEvent.reward} onChange={e => setNewEvent({...newEvent, reward: e.target.value})} />
               
@@ -734,7 +754,7 @@ const AdminPanel = () => {
               await fetch(`${API_URL}/admin/gallery`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
               setGalleryImage(null); fetchData();
             }} className="flex flex-col gap-4 bg-white/5 p-6 border border-white/10">
-              <ImageUpload label="Ajouter à la Galerie" value={galleryImage} onChange={(file) => setGalleryImage(file as File)} fieldName="image" />
+              <ImageUpload label="Ajouter à la Galerie" value={galleryImage} onChange={(file) => setGalleryImage(file as File)} />
               <button className="bg-[var(--accent-cyan)] text-black py-4 font-black uppercase">Uploader dans la Galerie</button>
             </form>
             <div className="grid grid-cols-4 gap-4">
