@@ -143,6 +143,19 @@ app.get('/api/events', (req, res) => {
     });
 });
 
+// GET ONLY PUBLIC EVENTS (Legal Facade)
+app.get('/api/public-events', (req, res) => {
+    const query = `
+        SELECT * FROM events 
+        WHERE visibility = 'Public' 
+        ORDER BY date DESC
+    `;
+    db.query(query, (err, results) => {
+        if (err) return res.status(500).json(err);
+        res.json(results);
+    });
+});
+
 // GET PARTICIPATION STATUS (Public)
 app.get('/api/events/:id/participation-status/:memberId', (req, res) => {
     db.query('SELECT * FROM participations WHERE event_id = ? AND member_id = ?', [req.params.id, req.params.memberId], (err, results) => {
@@ -314,7 +327,7 @@ const eventUploadFields = [
 ];
 
 app.post('/api/admin/events', authenticateToken, upload.fields(eventUploadFields), (req, res) => {
-    const { title, type, date, location, reward, price } = req.body;
+    const { title, type, date, location, reward, price, visibility } = req.body;
     
     const location_image = req.files['location_image'] ? req.files['location_image'][0].path : (req.body.location_image || null);
     const route_image = req.files['route_image'] ? req.files['route_image'][0].path : (req.body.route_image || null);
@@ -329,10 +342,11 @@ app.post('/api/admin/events', authenticateToken, upload.fields(eventUploadFields
         location_image, 
         route_image, 
         reward || '', 
-        numericPrice
+        numericPrice,
+        visibility || 'Private'
     ];
 
-    db.query('INSERT INTO events (title, type, date, location, location_image, route_image, reward, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+    db.query('INSERT INTO events (title, type, date, location, location_image, route_image, reward, price, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
     values, (err) => {
         if (err) {
             console.error('Database error in POST /api/admin/events:', err);
@@ -343,7 +357,7 @@ app.post('/api/admin/events', authenticateToken, upload.fields(eventUploadFields
 });
 
 app.put('/api/admin/events/:id', authenticateToken, upload.fields(eventUploadFields), (req, res) => {
-    const { title, type, date, location, reward, price } = req.body;
+    const { title, type, date, location, reward, price, visibility } = req.body;
     
     let location_image = req.files['location_image'] ? req.files['location_image'][0].path : (req.body.location_image || null);
     let route_image = req.files['route_image'] ? req.files['route_image'][0].path : (req.body.route_image || null);
@@ -359,10 +373,11 @@ app.put('/api/admin/events/:id', authenticateToken, upload.fields(eventUploadFie
         route_image, 
         reward || '', 
         numericPrice,
+        visibility || 'Private',
         req.params.id
     ];
 
-    db.query('UPDATE events SET title=?, type=?, date=?, location=?, location_image=?, route_image=?, reward=?, price=? WHERE id=?', 
+    db.query('UPDATE events SET title=?, type=?, date=?, location=?, location_image=?, route_image=?, reward=?, price=?, visibility=? WHERE id=?', 
     values, (err) => {
         if (err) {
             console.error('Database error in PUT /api/admin/events:', err);

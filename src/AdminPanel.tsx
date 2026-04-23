@@ -129,7 +129,7 @@ const AdminPanel = () => {
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
   // Form states
-  const [newEvent, setNewEvent] = useState<any>({ title: '', type: 'Street Race', date: '', location: '', location_image: null, route_image: null, reward: '', price: 0 });
+  const [newEvent, setNewEvent] = useState<any>({ title: '', type: 'Street Race', date: '', location: '', location_image: null, route_image: null, reward: '', price: 0, visibility: 'Private' });
   const [galleryImage, setGalleryImage] = useState<File | null>(null);
   const [newMember, setNewMember] = useState<any>({ nickname: '', car_model: '', car_photo: null, id_card_photo: null, profile_photo: null, access_code: '', wins_1st: 0, wins_2nd: 0, wins_3rd: 0, role: 'Member' });
 
@@ -690,7 +690,7 @@ const AdminPanel = () => {
                 const url = editingEventId ? `${API_URL}/admin/events/${editingEventId}` : `${API_URL}/admin/events`;
                 const res = await fetch(url, { method, headers: { 'Authorization': `Bearer ${token}` }, body: formData });
                 if (res.ok) {
-                  setNewEvent({ title: '', type: 'Street Race', date: '', location: '', location_image: null, route_image: null, reward: '', price: 0 });
+                  setNewEvent({ title: '', type: 'Street Race', date: '', location: '', location_image: null, route_image: null, reward: '', price: 0, visibility: 'Private' });
                   setEditingEventId(null);
                   fetchData();
                 } else {
@@ -709,6 +709,26 @@ const AdminPanel = () => {
               
               <ImageUpload label="Image du Lieu" value={newEvent.location_image} onChange={(file) => setNewEvent({...newEvent, location_image: file})} />
               <ImageUpload label="Image du Tracé" value={newEvent.route_image} onChange={(file) => setNewEvent({...newEvent, route_image: file})} />
+
+              <div className="col-span-2 flex flex-col gap-2">
+                <label className="text-white/20 text-[8px] font-black tracking-widest uppercase">Visibilité de l'événement</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    type="button"
+                    onClick={() => setNewEvent({...newEvent, visibility: 'Private'})}
+                    className={`p-4 border text-[10px] font-black uppercase tracking-widest transition-all ${newEvent.visibility === 'Private' ? 'bg-[var(--accent-purple)] border-[var(--accent-purple)] text-white' : 'bg-black border-white/10 text-white/20 hover:border-white/30'}`}
+                  >
+                    Private (Shadow)
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setNewEvent({...newEvent, visibility: 'Public'})}
+                    className={`p-4 border text-[10px] font-black uppercase tracking-widest transition-all ${newEvent.visibility === 'Public' ? 'bg-white border-white text-black' : 'bg-black border-white/10 text-white/20 hover:border-white/30'}`}
+                  >
+                    Public (Legal)
+                  </button>
+                </div>
+              </div>
 
               <input type="text" placeholder="RÉCOMPENSE" className="bg-black p-3 border border-white/10 col-span-2 outline-none" value={newEvent.reward} onChange={e => setNewEvent({...newEvent, reward: e.target.value})} />
               

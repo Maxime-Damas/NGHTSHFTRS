@@ -62,3 +62,4 @@ CREATE TABLE IF NOT EXISTS admins (
 );
 
 INSERT IGNORE INTO admins (username, password) VALUES ('admin', 'admin123');
+ALTER TABLE events ADD COLUMN visibility ENUM('Private', 'Public') DEFAULT 'Private';
